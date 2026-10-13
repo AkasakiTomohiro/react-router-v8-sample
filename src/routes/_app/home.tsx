@@ -1,7 +1,7 @@
 import type { Route } from "./+types/home";
-import { isLoggedIn } from "../isLoggedIn";
-import { Link, redirect } from "react-router";
+import { Link } from "react-router";
 import z from "zod";
+
 export function meta({}: Route.MetaArgs) {
   return [
     { title: "Home" },
@@ -23,7 +23,6 @@ export function clientLoader({ request }: Route.LoaderArgs) {
 }
 
 export default function Component({ loaderData }: Route.ComponentProps) {
-  
   return (
     <div>
       Home Page

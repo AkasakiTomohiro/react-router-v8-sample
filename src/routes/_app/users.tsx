@@ -40,6 +40,8 @@ export default function Users({ loaderData }: Route.ComponentProps) {
   );
 }
 
+// FIXME: Hydrateを使ってクルクルローディングを表示するようにする
+
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   if (isRouteErrorResponse(error)) {
     // 200以外のレスポンスボディに対してzodのバリデーションチェック

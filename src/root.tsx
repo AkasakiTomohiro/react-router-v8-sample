@@ -9,6 +9,14 @@ import {
 
 import type { Route } from "./+types/root";
 
+if (import.meta.env.DEV) {
+  const { network } = await import('virtual:msw');
+  const { handlers } = await import('./mocks/handlers');
+
+  network.configure({ handlers });
+  await network.enable();
+}
+
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
   {

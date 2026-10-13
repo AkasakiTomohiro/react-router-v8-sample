@@ -1,5 +1,5 @@
 import type { Route } from "./+types/home";
-import { Link } from "react-router";
+import { Link, useNavigation, useNavigate } from "react-router";
 import z from "zod";
 
 export function meta({}: Route.MetaArgs) {
@@ -23,13 +23,17 @@ export function clientLoader({ request }: Route.LoaderArgs) {
 }
 
 export default function Component({ loaderData }: Route.ComponentProps) {
+  const navigate = useNavigate();
   return (
-    <div>
-      Home Page
-      <Link to="/logout">Logout</Link>
-      <br />
-      page: {loaderData.page}<br />
-      search: {loaderData.search}
-    </div>
+    <>
+      <div>
+        Home Page
+        <Link to="/logout">Logout</Link>
+        <br />
+        page: {loaderData.page}<br />
+        search: {loaderData.search}
+      </div>
+      <button onClick={() => navigate("/users")}>ユーザー一覧</button>
+    </> 
   );
 }

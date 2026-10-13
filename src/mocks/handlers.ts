@@ -1,11 +1,41 @@
-import { http, HttpResponse } from 'msw/http'
+import { http, HttpResponse } from "msw/http";
 
 export const handlers = [
-  http.get('/api/user', () => {
+  http.get("/api/users", () => {
+    // return HttpResponse.json({code: "XXX_ERROR"}, { status: 500 });
+    // return HttpResponse.json({code: "XXX_ERROR"}, { status: 501 });
     return HttpResponse.json({
-      id: 'abc-123',
-      firstName: 'John',
-      lastName: 'Maverick',
-    })
+      users: [
+        {
+          id: "abc-123",
+          name: "John",
+        },
+        {
+          id: "def-456",
+          name: "Jane",
+        },
+      ],
+    });
+  }),
+  http.get(`/api/users/:userId`, ({ params }) => {
+    // return HttpResponse.json({code: "XXX_ERROR"}, { status: 500 });
+    const { userId } = params;
+    if (userId !== "abc-123" && userId !== "def-456") {
+      return HttpResponse.json({ code: "USER_NOT_FOUND" }, { status: 404 });
+    }
+    return HttpResponse.json({
+      id: userId,
+      name: userId === "abc-123" ? "John" : "Jane",
+    });
+  }),
+  http.patch(`/api/users/:userId`, ({ params }) => {
+    // return HttpResponse.json({code: "XXX_ERROR"}, { status: 500 });
+    const { userId } = params;
+    if (userId !== "abc-123" && userId !== "def-456") {
+      return HttpResponse.json({ code: "USER_NOT_FOUND" }, { status: 404 });
+    }
+    return HttpResponse.json({
+      code: "OK"
+    });
   }),
 ];

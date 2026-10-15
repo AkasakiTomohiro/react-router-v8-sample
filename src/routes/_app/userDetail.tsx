@@ -5,7 +5,7 @@ import {
   useAsyncError,
 } from "react-router";
 import type { Route } from "./+types/userDetail";
-import React, { useEffect, Suspense } from "react";
+import React, { Suspense } from "react";
 
 export type User = {
   id: string;

@@ -1,44 +1,35 @@
 import { http, HttpResponse } from "msw/http";
 
+const users: Record<string, { id: string; name: string }> = {
+  "abc-123": { id: "abc-123", name: "John" },
+  "def-456": { id: "def-456", name: "Jane" },
+};
+
 export const handlers = [
   http.get("/api/users", async () => {
-    await new Promise(resolve => setTimeout(resolve, 2000)); // Simulate network delay
-    // return HttpResponse.json({code: "XXX_ERROR"}, { status: 500 });
-    // return HttpResponse.json({code: "XXX_ERROR"}, { status: 501 });
-    return HttpResponse.json({
-      users: [
-        {
-          id: "abc-123",
-          name: "John",
-        },
-        {
-          id: "def-456",
-          name: "Jane",
-        },
-      ],
-    });
+    await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate network delay
+    return HttpResponse.json({ users: Object.values(users) });
   }),
   http.get(`/api/users/:userId`, async ({ params }) => {
-    await new Promise(resolve => setTimeout(resolve, 2000)); // Simulate network delay
-    // return HttpResponse.json({code: "XXX_ERROR"}, { status: 500 });
+    await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate network delay
     const { userId } = params;
-    if (userId !== "abc-123" && userId !== "def-456") {
+    const user = users[userId as string];
+    if (!user) {
       return HttpResponse.json({ code: "USER_NOT_FOUND" }, { status: 404 });
     }
-    return HttpResponse.json({
-      id: userId,
-      name: userId === "abc-123" ? "John" : "Jane",
-    });
+    return HttpResponse.json(user);
   }),
-  http.patch(`/api/users/:userId`, async ({ params }) => {
-    await new Promise(resolve => setTimeout(resolve, 2000)); // Simulate network delay
-    return HttpResponse.json({code: "XXX_ERROR"}, { status: 500 });
-    const { userId } = params;
-    if (userId !== "abc-123" && userId !== "def-456") {
+  http.patch(`/api/users/:userId`, async ({ params, request }) => {
+    await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate network delay
+    const user = users[params.userId as string];
+    if (!user) {
       return HttpResponse.json({ code: "USER_NOT_FOUND" }, { status: 404 });
     }
-    return HttpResponse.json({
-      code: "OK"
-    });
+    const body = (await request.json()) as { name?: unknown };
+    if (typeof body.name !== "string" || !body.name.trim()) {
+      return HttpResponse.json({ code: "INVALID_NAME" }, { status: 400 });
+    }
+    user.name = body.name.trim();
+    return HttpResponse.json({ code: "OK" });
   }),
 ];

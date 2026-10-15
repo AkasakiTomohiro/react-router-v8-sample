@@ -3,6 +3,7 @@ import {
   Form,
   Await,
   useAsyncError,
+  useNavigation,
 } from "react-router";
 import type { Route } from "./+types/userDetail";
 import React, { Suspense } from "react";
@@ -37,16 +38,21 @@ export function clientLoader({ params }: Route.ClientLoaderArgs) {
   };
 }
 
-export async function clientAction({ params }: Route.ClientLoaderArgs) {
+export async function clientAction({ params, request }: Route.ClientActionArgs) {
+  const formData = await request.formData();
   const response = await fetch(`/api/users/${params.userId}`, {
     method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name: formData.get("name") }),
   });
   const body = await response.json();
 
   return {
     status: response.status,
     code: body.code,
-  } as { status: 200; code: "OK" } | { status: 500 | 501; code: "XXX_ERROR" };
+  } as
+    | { status: 200; code: "OK" }
+    | { status: 400 | 404 | 500 | 501; code: string };
 }
 
 function Layout({ children }: { children: React.ReactNode }) {
@@ -83,8 +89,16 @@ function UserDetailPresentation({
       )}
 
       <Form action={`/users/${user?.id}`} method="post">
-        <p>First Name: {isLoading ? "[[Skeleton]]" : user?.name}</p>
-        <p>Last Name: {isLoading ? "[[Skeleton]]" : user?.name}</p>
+        <label>
+          Name: {" "}
+          <input
+            type="text"
+            name="name"
+            defaultValue={isLoading ? "" : user?.name}
+            disabled={Boolean(isLoading)}
+            required
+          />
+        </label>
         <button type="submit" disabled={Boolean(isLoading)}>
           Update
         </button>
@@ -103,7 +117,9 @@ function UserDetailContainer({
   // 将来編集機能が追加される想定
   // const [user, setUser] = useState(user);
   // const [editUser, setEditUser] = useState(user);
-  return <UserDetailPresentation user={user} actionData={actionData} />;
+  const {state} = useNavigation();
+  const isSending = state === "submitting";
+  return <UserDetailPresentation user={user} actionData={actionData} isLoading={isSending} />;
 }
 
 async function GetUserErrorBoundary() {

@@ -5,11 +5,12 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useNavigation
 } from "react-router";
 
 import type { Route } from "./+types/root";
 
-if (import.meta.env.DEV) {
+if (import.meta.env.DEV && !import.meta.env.SSR) {
   const { network } = await import('virtual:msw');
   const { handlers } = await import('./mocks/handlers');
 
@@ -48,8 +49,22 @@ export function Layout({ children }: { children: React.ReactNode }) {
   );
 }
 
+export function HydrateFallback() {
+  return (
+    <p>Loading...</p>
+  );
+}
+
 export default function App() {
-  return <Outlet />;
+  // const navigation = useNavigation();
+  // const isLoading = navigation.state === "loading";
+  return (
+    <>
+      {/* {isLoading && <div>Loading...</div>} */}
+      {/* {!isLoading && <Outlet />} */}
+      <Outlet />
+    </>
+  );
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {

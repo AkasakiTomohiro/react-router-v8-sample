@@ -1,5 +1,6 @@
 import type { Route } from "./+types/users";
 import { data, isRouteErrorResponse, Link } from "react-router";
+
 export type Users = {
   users: {
     id: string;
@@ -39,8 +40,6 @@ export default function Users({ loaderData }: Route.ComponentProps) {
     </Layout>
   );
 }
-
-// FIXME: Hydrateを使ってクルクルローディングを表示するようにする
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   if (isRouteErrorResponse(error)) {
